@@ -1,0 +1,37 @@
+{
+  "name": "cordova-plugin-callnotification",
+  "version": "0.0.1",
+  "description": "Cordova Plugin to show notification full scren when receive call",
+  "cordova": {
+    "id": "org.apache.cordova.callnotification",
+    "platforms": [
+      "android"
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lucasveronezzi/cordova-plugin-callnotification.git"
+  },
+  "keywords": [
+    "cordova",
+    "device",
+    "ecosystem:cordova",
+    "cordova-android"
+  ],
+  "engines": [
+    {
+      "name": "cordova",
+      "version": ">=9"
+    },
+    {
+      "name": "cordova-android",
+      "version": ">=8"
+    }
+  ],
+  "author": "Lucas Veronezzi",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/lucasveronezzi/cordova-plugin-callnotification/issues"
+  },
+  "homepage": "https://github.com/lucasveronezzi/cordova-plugin-callnotification#readme"
+}
