@@ -14,10 +14,13 @@
     </js-module>
 
     <platform name="android">
-        <config-file parent="/*" target="res/xml/config.xml">
+        <config-file target="res/xml/config.xml" parent="/*">
             <feature name="CallNotification" >
                 <param name="android-package" value="org.apache.cordova.callnotification.CallNotification"/>
             </feature>
+        </config-file>
+        <config-file target="AndroidManifest.xml" parent="/*">
+            <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
         </config-file>
         <config-file target="AndroidManifest.xml" parent="application">
             <activity 
@@ -27,7 +30,6 @@
                 android:parentActivityName="MainActivity" 
                 android:taskAffinity="" 
             />
-            <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
         </config-file>
         <source-file src="src/android/CallNotification.java" target-dir="src/org/apache/cordova/callnotification" />
         <source-file src="src/android/ReceveingCallActivity.java" target-dir="src/org/apache/cordova/callnotification" />
