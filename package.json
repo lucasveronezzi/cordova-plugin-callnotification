@@ -3,7 +3,6 @@
   "version": "0.0.1",
   "description": "Cordova Plugin to show notification full scren when receive call",
   "cordova": {
-    "id": "org.apache.cordova.callnotification",
     "platforms": [
       "android"
     ]
