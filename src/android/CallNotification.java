@@ -31,9 +31,13 @@ public class CallNotification extends CordovaPlugin {
 
     public static boolean bringToFront = false;
 
+    private HandlerFcmReceiver customFCMReceiver;
+
     @Override
     protected void pluginInitialize() {
         cordovaActivity = this.cordova.getActivity();
+
+        customFCMReceiver = new HandlerFcmReceiver();
     }
 
     @Override
@@ -86,13 +90,13 @@ public class CallNotification extends CordovaPlugin {
         );
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "call");
-        builder.setSmallIcon(getApplicationInfo().icon)
+        builder.setSmallIcon(context.getApplicationInfo().icon)
             .setContentTitle("chamada de video")
             .setContentText("teste")
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setFullScreenIntent(notifyPendingIntent, true);
 
-        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.notify(0, builder.build());
     }
 
