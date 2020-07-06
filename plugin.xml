@@ -17,6 +17,7 @@
         <config-file target="res/xml/config.xml" parent="/*">
             <feature name="CallNotification" >
                 <param name="android-package" value="org.apache.cordova.callnotification.CallNotification"/>
+                <param name="onload" value="true" />
             </feature>
         </config-file>
         <config-file target="AndroidManifest.xml" parent="/*">
@@ -26,13 +27,13 @@
             <activity 
                 android:excludeFromRecents="true" 
                 android:launchMode="singleTask" 
-                android:name="org.apache.cordova.firebase.ReceveingCallActivity" 
+                android:name="org.apache.cordova.callnotification.ReceveingCallActivity" 
                 android:parentActivityName="MainActivity" 
                 android:taskAffinity="" 
             />
         </config-file>
         <source-file src="src/android/CallNotification.java" target-dir="src/org/apache/cordova/callnotification" />
-        <source-file src="src/android/HandlerFcmReceiver.java" target-dir="src/org/apache/cordova/callnotification" />
+        <source-file src="src/android/HandlerMessage.java" target-dir="src/org/apache/cordova/callnotification" />
         <source-file src="src/android/ReceveingCallActivity.java" target-dir="src/org/apache/cordova/callnotification" />
         <source-file src="src/android/activity_receveing_call.xml" target-dir="res/layout"/>
     </platform>
