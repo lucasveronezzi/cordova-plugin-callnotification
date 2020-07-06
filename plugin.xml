@@ -32,6 +32,7 @@
             />
         </config-file>
         <source-file src="src/android/CallNotification.java" target-dir="src/org/apache/cordova/callnotification" />
+        <source-file src="src/android/HandlerFcmReceiver.java" target-dir="src/org/apache/cordova/callnotification" />
         <source-file src="src/android/ReceveingCallActivity.java" target-dir="src/org/apache/cordova/callnotification" />
         <source-file src="src/android/activity_receveing_call.xml" target-dir="res/layout"/>
     </platform>
