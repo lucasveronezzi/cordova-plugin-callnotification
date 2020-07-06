@@ -23,15 +23,6 @@ public class CallNotification extends CordovaPlugin {
 
     public static boolean bringToFront = false;
 
-    private HandlerFcmReceiver customFCMReceiver;
-
-    @Override
-    protected void pluginInitialize() {
-        cordovaActivity = this.cordova.getActivity();
-
-        customFCMReceiver = new HandlerFcmReceiver();
-    }
-
     @Override
     public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
          try{
