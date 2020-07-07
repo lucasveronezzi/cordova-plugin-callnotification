@@ -33,6 +33,8 @@
                 android:parentActivityName="MainActivity" 
                 android:taskAffinity="" 
             />
+            <receiver android:exported="false" android:name="org.apache.cordova.callnotification.HandlerMessage$JoinCallReceiver" />
+            <receiver android:exported="false" android:name="org.apache.cordova.callnotification.HandlerMessage$RefuseCallReceiver" />
         </config-file>
         <source-file src="src/android/CallNotification.java" target-dir="src/org/apache/cordova/callnotification" />
         <source-file src="src/android/HandlerMessage.java" target-dir="src/org/apache/cordova/callnotification" />

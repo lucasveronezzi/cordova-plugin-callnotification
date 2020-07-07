@@ -3,6 +3,7 @@ package org.apache.cordova.callnotification;
 import android.app.Activity;
 import android.app.KeyguardManager;
 import android.content.Context;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.WindowManager;
 import android.os.Build;
@@ -15,13 +16,25 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.Set;
+
 public class CallNotification extends CordovaPlugin {
 
     private static final String TAG = "CallNotificationPlugin";
 
+    private static CallbackContext notificationActionCallbackContext;
+
+    private static ArrayList<Bundle> notificationActionStack = null;
+
     private static Activity cordovaActivity = null;
 
     public static boolean bringToFront = false;
+
+    @Override
+    protected void pluginInitialize() {
+        cordovaActivity = this.cordova.getActivity();
+    }
 
     @Override
     public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
@@ -44,8 +57,14 @@ public class CallNotification extends CordovaPlugin {
     }
 
     @Override
+    public void onReset() {
+      CallNotification.notificationActionCallbackContext = null;
+    }
+
+    @Override
     public void onDestroy() {
-        cordovaActivity = null;
+        CallNotification.cordovaActivity = null;
+        CallNotification.notificationActionCallbackContext = null;
         super.onDestroy();
     }
 
@@ -56,11 +75,13 @@ public class CallNotification extends CordovaPlugin {
     }
 
     private void onActions(final CallbackContext callbackContext) {
-        JSONObject json = new JSONObject();
-
-        PluginResult pluginresult = new PluginResult(PluginResult.Status.OK, json);
-        pluginresult.setKeepCallback(true);
-        callbackContext.sendPluginResult(pluginresult);
+      CallNotification.notificationActionCallbackContext = callbackContext;
+      if (CallNotification.notificationActionStack != null) {
+        for (Bundle bundle : CallNotification.notificationActionStack) {
+          CallNotification.sendActionToJS(bundle);
+        }
+        CallNotification.notificationActionStack.clear();
+      }
     }
 
     public static boolean activityIsKiled() {
@@ -90,6 +111,32 @@ public class CallNotification extends CordovaPlugin {
       }
 
       bringToFront = false;
+    }
+
+    public static void sendActionToJS(Bundle bundle) {
+      Log.d("myplugin", "receveid action");
+      if (notificationActionCallbackContext == null) {
+        if (CallNotification.notificationActionStack == null) {
+          CallNotification.notificationActionStack = new ArrayList<Bundle>();
+        }
+        notificationActionStack.add(bundle);
+        return;
+      }
+
+      JSONObject json = new JSONObject();
+      Set<String> keys = bundle.keySet();
+      for (String key : keys) {
+        try {
+          json.put(key, bundle.get(key));
+        } catch (JSONException e) {
+          handleExceptionWithContext(e, notificationActionCallbackContext);
+          return;
+        }
+      }
+
+      PluginResult pluginresult = new PluginResult(PluginResult.Status.OK, json);
+      pluginresult.setKeepCallback(true);
+      notificationActionCallbackContext.sendPluginResult(pluginresult);
     }
 
 }
