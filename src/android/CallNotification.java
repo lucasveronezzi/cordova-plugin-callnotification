@@ -53,7 +53,10 @@ public class CallNotification extends CordovaPlugin {
             if (action.equals("onActions")) {
                 this.onActions(callbackContext);
                 return true;
-            }
+            } else if(action.equals("removeFromLockScreen")) {
+               this.removeFromLockScreen(callbackContext);
+               return true;
+           }
         }catch(Exception e){
             handleExceptionWithContext(e, callbackContext);
         }
@@ -93,6 +96,23 @@ public class CallNotification extends CordovaPlugin {
         }
         CallNotification.notificationActionStack.clear();
       }
+    }
+
+    private void removeFromLockScreen(final CallbackContext callbackContext) {
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
+        cordovaActivity.setShowWhenLocked(false);
+        cordovaActivity.setTurnScreenOn(false);
+      }
+
+      if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+        cordovaActivity.getWindow().clearFlags(
+          WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED |
+          WindowManager.LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON |
+          WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
+        );
+      }
+
+      callbackContext.success();
     }
 
     public static boolean activityIsKiled() {
