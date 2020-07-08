@@ -89,6 +89,7 @@ public class CallNotification extends CordovaPlugin {
 
     protected static void handleExceptionWithContext(Exception e, CallbackContext context) {
         String msg = e.toString();
+        e.printStackTrace(System.out);
         Log.e(TAG, msg);
         context.error(msg);
     }
@@ -129,14 +130,18 @@ public class CallNotification extends CordovaPlugin {
     }
 
     private void showNotification(final CallbackContext callbackContext, final JSONObject data) {
-      try {
-        HandlerMessage obj = new HandlerMessage();
-        obj.showNotification(jsonToMap(data), cordovaActivity.getApplicationContext());
+      cordovaActivity.runOnUiThread(new Runnable()  {
+        public void run() {
+          try {
+            HandlerMessage obj = new HandlerMessage();
+            obj.showNotification(jsonToMap(data), cordovaActivity.getApplicationContext());
 
-        callbackContext.success();
-      } catch (JSONException e) {
-        callbackContext.error("Convert json to map error");
-      }
+            callbackContext.success();
+          } catch (JSONException e) {
+            callbackContext.error("Convert json to map error");
+          }
+        }
+      });
     }
 
     public static Map<String, String> jsonToMap(final JSONObject data) throws JSONException{
@@ -144,7 +149,7 @@ public class CallNotification extends CordovaPlugin {
       Iterator<String> keys = data.keys();
       while(keys.hasNext()) {
         String key = keys.next();
-        map.put(key, (String) data.get(key));
+        map.put(key, String.valueOf(data.get(key)));
       }
       return map;
     }
@@ -263,7 +268,7 @@ public class CallNotification extends CordovaPlugin {
 
     public static void startRingtone(Context context) {
       Uri path = Uri.parse("android.resource://" + context.getPackageName() + "/raw/receveing_call");
-      RingtoneManager.setActualDefaultRingtoneUri(context, RingtoneManager.TYPE_RINGTONE, path);
+      // RingtoneManager.setActualDefaultRingtoneUri(context, RingtoneManager.TYPE_RINGTONE, path);
       sound = RingtoneManager.getRingtone(context, path);
       sound.play();
     }

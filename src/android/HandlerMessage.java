@@ -54,13 +54,13 @@ public class HandlerMessage implements FirebasePluginHandlerInterface {
       Intent joinButton = new Intent(context, JoinCallReceiver.class);
       joinButton.putExtras(bundle);
       PendingIntent joinPendingIntent = PendingIntent.getBroadcast(
-        context, 5, joinButton, 0
+        context, 5, joinButton, PendingIntent.FLAG_UPDATE_CURRENT
       );
 
       Intent refuseButton = new Intent(context, RefuseCallReceiver.class);
       refuseButton.putExtras(bundle);
       PendingIntent refusePendingIntent = PendingIntent.getBroadcast(
-        context, 6, refuseButton, 0
+        context, 6, refuseButton, PendingIntent.FLAG_UPDATE_CURRENT
       );
 
       NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "call");

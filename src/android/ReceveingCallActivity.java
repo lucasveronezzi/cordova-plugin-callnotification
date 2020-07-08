@@ -1,6 +1,7 @@
 package org.apache.cordova.callnotification;
 
 import android.app.Activity;
+import android.app.KeyguardManager;
 import android.app.NotificationManager;
 import android.content.res.Resources;
 import android.os.Bundle;
@@ -21,28 +22,37 @@ public class ReceveingCallActivity extends Activity  {
         Resources res = getApplication().getResources();
         extras = getIntent().getExtras();
 
-        setContentView(res.getIdentifier("activity_receveing_call", "layout", package_name));
+        int flags = WindowManager.LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON;
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
-            setShowWhenLocked(true);
-            setTurnScreenOn(true);
+          setShowWhenLocked(true);
+          setTurnScreenOn(true);
+        } else {
+          flags = flags |
+            WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED |
+            WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON;
         }
 
-        //KeyguardManager keyguard = (KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE);
+        KeyguardManager keyguard = (KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            //keyguard.requestDismissKeyguard(this, null);
+            keyguard.requestDismissKeyguard(this, null);
         } else {
-            getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON |
-                WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD |
-                WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED |
-                WindowManager.LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON |
-                WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
+          flags = flags |
+            WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON |
+            WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD |
+            WindowManager.LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON;
         }
 
         if (Build.VERSION.SDK_INT < 30) {
-            getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+          flags = flags | WindowManager.LayoutParams.FLAG_FULLSCREEN;
         }
+
+        getWindow().addFlags(flags);
+
+        setContentView(res.getIdentifier("activity_receveing_call", "layout", package_name));
+
+
 
         CallNotification.startVibration(this);
     }
