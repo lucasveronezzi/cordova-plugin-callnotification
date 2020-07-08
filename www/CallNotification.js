@@ -7,3 +7,7 @@ exports.onActions = function (success, error) {
 exports.removeFromLockScreen = function (success, error) {
     exec(success, error, 'CallNotification', 'removeFromLockScreen', []);
 };
+
+exports.showNotification = function (options, success, error) {
+    exec(success, error, 'CallNotification', 'showNotification', [options]);
+};

@@ -1,21 +1,13 @@
 package org.apache.cordova.callnotification;
 
 import android.app.Activity;
-import android.app.KeyguardManager;
 import android.app.NotificationManager;
-import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Build;
-import android.telecom.Call;
-import android.util.Log;
 import android.view.View;
-import android.view.Window;
 import android.view.WindowManager;
 import android.content.Context;
-import android.widget.Button;
-
-import java.util.Set;
 
 public class ReceveingCallActivity extends Activity  {
 
@@ -36,10 +28,10 @@ public class ReceveingCallActivity extends Activity  {
             setTurnScreenOn(true);
         }
 
-        KeyguardManager keyguard = (KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE);
+        //KeyguardManager keyguard = (KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            keyguard.requestDismissKeyguard(this, null);
+            //keyguard.requestDismissKeyguard(this, null);
         } else {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON |
                 WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD |
@@ -57,24 +49,26 @@ public class ReceveingCallActivity extends Activity  {
 
     public void clickJoin(View view) {
         extras.putString("action", "join_call");
-        CallNotification.sendActionToJS(extras, this);
-
-        CallNotification.createMainActivy(this, false);
 
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.cancel(Integer.parseInt(extras.getString("id")));
+
+        CallNotification.sendActionToJS(extras, this);
+
+        CallNotification.createMainActivy(this, false);
 
         finish();
     }
 
     public void clickRefuse(View view) {
         extras.putString("action", "refuse_call");
-        CallNotification.sendActionToJS(extras, this);
-
-        CallNotification.createMainActivy(this, true);
 
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.cancel(Integer.parseInt(extras.getString("id")));
+
+        CallNotification.sendActionToJS(extras, this);
+
+        CallNotification.createMainActivy(this, true);
 
         finish();
     }

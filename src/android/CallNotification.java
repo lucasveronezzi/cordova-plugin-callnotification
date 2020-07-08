@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.KeyguardManager;
 import android.content.Context;
 import android.content.Intent;
-import android.media.MediaPlayer;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
@@ -24,6 +23,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 
 public class CallNotification extends CordovaPlugin {
@@ -56,7 +58,10 @@ public class CallNotification extends CordovaPlugin {
             } else if(action.equals("removeFromLockScreen")) {
                this.removeFromLockScreen(callbackContext);
                return true;
-           }
+            } else if(action.equals("showNotification")) {
+              this.showNotification(callbackContext, args.getJSONObject(0));
+              return true;
+            }
         }catch(Exception e){
             handleExceptionWithContext(e, callbackContext);
         }
@@ -90,11 +95,19 @@ public class CallNotification extends CordovaPlugin {
 
     private void onActions(final CallbackContext callbackContext) {
       CallNotification.notificationActionCallbackContext = callbackContext;
+      boolean sended = false;
       if (CallNotification.notificationActionStack != null) {
         for (Bundle bundle : CallNotification.notificationActionStack) {
           CallNotification.sendActionToJS(bundle, cordovaActivity);
+          sended = true;
         }
         CallNotification.notificationActionStack.clear();
+      }
+
+      if (!sended) {
+        PluginResult pluginresult = new PluginResult(PluginResult.Status.OK);
+        pluginresult.setKeepCallback(true);
+        callbackContext.sendPluginResult(pluginresult);
       }
     }
 
@@ -113,6 +126,27 @@ public class CallNotification extends CordovaPlugin {
       }
 
       callbackContext.success();
+    }
+
+    private void showNotification(final CallbackContext callbackContext, final JSONObject data) {
+      try {
+        HandlerMessage obj = new HandlerMessage();
+        obj.showNotification(jsonToMap(data), cordovaActivity.getApplicationContext());
+
+        callbackContext.success();
+      } catch (JSONException e) {
+        callbackContext.error("Convert json to map error");
+      }
+    }
+
+    public static Map<String, String> jsonToMap(final JSONObject data) throws JSONException{
+      Map<String, String> map = new HashMap<String, String>();
+      Iterator<String> keys = data.keys();
+      while(keys.hasNext()) {
+        String key = keys.next();
+        map.put(key, (String) data.get(key));
+      }
+      return map;
     }
 
     public static boolean activityIsKiled() {
