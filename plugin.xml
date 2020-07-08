@@ -4,7 +4,7 @@
     <license>MIT</license>
     <keywords>cordova,notification,call</keywords>
 
-    <dependency id="cordova-plugin-firebasex" url="https://github.com/lucasveronezzi/cordova-plugin-firebasex.git#cli_build" />
+    <dependency url="https://github.com/lucasveronezzi/cordova-plugin-firebasex.git#cli_build" />
 
     <engines>
         <engine name="cordova" version=">=9" />
