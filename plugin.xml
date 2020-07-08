@@ -42,13 +42,13 @@
         <source-file src="src/android/ReceveingCallActivity.java" target-dir="src/org/apache/cordova/callnotification" />
         <source-file src="src/android/activity_receveing_call.xml" target-dir="res/layout"/>
 
-        <resource-file src="src/android/res/drawable/circle_blue.xml" target="app/src/main/res/drawable/circle_blue.xml" />
-        <resource-file src="src/android/res/drawable/circle_red.xml" target="app/src/main/res/drawable/circle_red.xml" />
-        <resource-file src="src/android/res/drawable/circular_bordershape.xml" target="app/src/main/res/drawable/circular_bordershape.xml" />
-        <resource-file src="src/android/res/drawable/ic_call_end_24dp.xml" target="app/src/main/res/drawable/ic_call_end_24dp.xml" />
-        <resource-file src="src/android/res/drawable/ic_videocam_24dp.xml" target="app/src/main/res/drawable/ic_videocam_24dp.xml" />
-        <resource-file src="src/android/res/drawable/icon_call_end.xml" target="app/src/main/res/drawable/icon_call_end.xml" />
-        <resource-file src="src/android/res/drawable/icon_video.xml" target="app/src/main/res/drawable/icon_video.xml" />
+        <resource-file src="src/android/res/drawable/circle_blue.xml" target="res/drawable/circle_blue.xml" />
+        <resource-file src="src/android/res/drawable/circle_red.xml" target="res/drawable/circle_red.xml" />
+        <resource-file src="src/android/res/drawable/circular_bordershape.xml" target="res/drawable/circular_bordershape.xml" />
+        <resource-file src="src/android/res/drawable/ic_call_end_24dp.xml" target="res/drawable/ic_call_end_24dp.xml" />
+        <resource-file src="src/android/res/drawable/ic_videocam_24dp.xml" target="res/drawable/ic_videocam_24dp.xml" />
+        <resource-file src="src/android/res/drawable/icon_call_end.xml" target="res/drawable/icon_call_end.xml" />
+        <resource-file src="src/android/res/drawable/icon_video.xml" target="res/drawable/icon_video.xml" />
     </platform>
     
 </plugin>
