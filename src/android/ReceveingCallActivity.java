@@ -2,25 +2,32 @@ package org.apache.cordova.callnotification;
 
 import android.app.Activity;
 import android.app.KeyguardManager;
+import android.app.NotificationManager;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Build;
+import android.telecom.Call;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
 import android.view.WindowManager;
 import android.content.Context;
 import android.widget.Button;
 
+import java.util.Set;
+
 public class ReceveingCallActivity extends Activity  {
 
-    private String package_name = "";
+    private Bundle extras = null;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        package_name = getApplication().getPackageName();
+
+        String package_name = getApplication().getPackageName();
         Resources res = getApplication().getResources();
+        extras = getIntent().getExtras();
 
         setContentView(res.getIdentifier("activity_receveing_call", "layout", package_name));
 
@@ -41,44 +48,34 @@ public class ReceveingCallActivity extends Activity  {
                 WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
         }
 
-        Button clickButton = (Button) findViewById(res.getIdentifier("testeButton", "id", package_name));
+        if (Build.VERSION.SDK_INT < 30) {
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        }
 
-        //Button clickButton = (Button) findViewById(R.id.testeButton);
-        clickButton.setOnClickListener( new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-              createMainActivy();
-
-            }
-        });
+        CallNotification.startVibration(this);
     }
 
-    public void createMainActivy() {
-      if(CallNotification.activityIsKiled()) {
-        Log.d("myplugin", "create activity");
+    public void clickJoin(View view) {
+        extras.putString("action", "join_call");
+        CallNotification.sendActionToJS(extras, this);
 
-        CallNotification.bringToFront = true;
+        CallNotification.createMainActivy(this, false);
 
-        Intent mainApp = this.getApplicationContext().getPackageManager().getLaunchIntentForPackage(package_name);
-
-        mainApp.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP  | Intent.FLAG_ACTIVITY_NEW_TASK);
-
-        startActivity(mainApp);
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.cancel(Integer.parseInt(extras.getString("id")));
 
         finish();
+    }
 
-      } else {
-        CallNotification.showInLockScreen();
+    public void clickRefuse(View view) {
+        extras.putString("action", "refuse_call");
+        CallNotification.sendActionToJS(extras, this);
 
-        Intent mainApp = this.getApplicationContext().getPackageManager().getLaunchIntentForPackage(package_name);
+        CallNotification.createMainActivy(this, true);
 
-        mainApp.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT  | Intent.FLAG_ACTIVITY_NEW_TASK);
-
-        startActivity(mainApp);
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.cancel(Integer.parseInt(extras.getString("id")));
 
         finish();
-
-        Log.d("myplugin", "show lock screen");
-      }
     }
 }

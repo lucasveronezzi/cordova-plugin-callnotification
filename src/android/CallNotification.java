@@ -3,7 +3,14 @@ package org.apache.cordova.callnotification;
 import android.app.Activity;
 import android.app.KeyguardManager;
 import android.content.Context;
+import android.content.Intent;
+import android.media.MediaPlayer;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.util.Log;
 import android.view.WindowManager;
 import android.os.Build;
@@ -29,7 +36,11 @@ public class CallNotification extends CordovaPlugin {
 
     private static Activity cordovaActivity = null;
 
-    public static boolean bringToFront = false;
+    private static boolean bringToFront = false;
+
+    private static Vibrator vibrate = null;
+
+    private static Ringtone sound = null;
 
     @Override
     protected void pluginInitialize() {
@@ -78,7 +89,7 @@ public class CallNotification extends CordovaPlugin {
       CallNotification.notificationActionCallbackContext = callbackContext;
       if (CallNotification.notificationActionStack != null) {
         for (Bundle bundle : CallNotification.notificationActionStack) {
-          CallNotification.sendActionToJS(bundle);
+          CallNotification.sendActionToJS(bundle, cordovaActivity);
         }
         CallNotification.notificationActionStack.clear();
       }
@@ -93,33 +104,35 @@ public class CallNotification extends CordovaPlugin {
 
     public static void showInLockScreen() {
       Log.d("myplugin", "show lock screen");
+
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
         cordovaActivity.setShowWhenLocked(true);
         cordovaActivity.setTurnScreenOn(true);
       }
 
-      KeyguardManager keyguard = (KeyguardManager) cordovaActivity.getSystemService(Context.KEYGUARD_SERVICE);
-
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-        // keyguard.requestDismissKeyguard(cordovaActivity, null);
-      } else {
-        cordovaActivity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON |
-          WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD |
+      if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+        cordovaActivity.getWindow().addFlags(
           WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED |
           WindowManager.LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON |
-          WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
+          WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
+        );
       }
 
       bringToFront = false;
     }
 
-    public static void sendActionToJS(Bundle bundle) {
+    public static void sendActionToJS(Bundle bundle, Context context) {
+      stopVibration();
+      stopRingtone();
+
       Log.d("myplugin", "receveid action");
+
       if (notificationActionCallbackContext == null) {
         if (CallNotification.notificationActionStack == null) {
           CallNotification.notificationActionStack = new ArrayList<Bundle>();
         }
         notificationActionStack.add(bundle);
+
         return;
       }
 
@@ -138,5 +151,73 @@ public class CallNotification extends CordovaPlugin {
       pluginresult.setKeepCallback(true);
       notificationActionCallbackContext.sendPluginResult(pluginresult);
     }
+
+    public static void createMainActivy(Context context, boolean background) {
+        String package_name = context.getApplicationContext().getPackageName();
+
+        Intent mainApp = context.getApplicationContext().getPackageManager().getLaunchIntentForPackage(package_name);
+
+        if(CallNotification.activityIsKiled()) {
+            Log.d("myplugin", "create activity");
+
+            //mainApp.putExtra("cdvStartInBackground", background);
+
+            bringToFront = !background;
+
+            mainApp.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP  | Intent.FLAG_ACTIVITY_NEW_TASK);
+
+            context.startActivity(mainApp);
+
+        } else {
+            Log.d("myplugin", "show lock screen");
+
+            if(!background) {
+              CallNotification.showInLockScreen();
+
+              mainApp.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+
+              mainApp.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+              context.startActivity(mainApp);
+            }
+        }
+    }
+
+    public static void startVibration(Context context) {
+      if (vibrate == null) {
+        vibrate = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
+      }
+
+      long[] pattern = {0, 800, 1000};
+
+      vibrate.cancel();
+
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        int[] mAmplitudes = new int[]{0, VibrationEffect.DEFAULT_AMPLITUDE, 0};
+        vibrate.vibrate(VibrationEffect.createWaveform (pattern, mAmplitudes, 0));
+      } else {
+        //deprecated in API 26
+        vibrate.vibrate(pattern, 0);
+      }
+    }
+
+    public static void stopVibration() {
+      if (vibrate != null) {
+        vibrate.cancel();
+      }
+    }
+
+    public static void startRingtone(Context context) {
+      Uri path = Uri.parse("android.resource://" + context.getPackageName() + "/raw/receveing_call");
+      RingtoneManager.setActualDefaultRingtoneUri(context, RingtoneManager.TYPE_RINGTONE, path);
+      sound = RingtoneManager.getRingtone(context, path);
+      sound.play();
+    }
+
+  public static void stopRingtone() {
+    if(sound != null) {
+      sound.stop();
+    }
+  }
 
 }

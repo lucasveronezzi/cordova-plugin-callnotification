@@ -1,5 +1,6 @@
 package org.apache.cordova.callnotification;
 
+import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
@@ -30,41 +31,48 @@ public class HandlerMessage implements FirebasePluginHandlerInterface {
           bundle.putString(key, data.get(key));
         }
 
+        Context context = service.getApplicationContext();
+
         String title = "Chamada de Video";
         String body = "Você está recebendo uma chamada de video";
-        String package_name = service.getPackageName();
-        Resources res = service.getResources();
+        int callId = 0;
+        String package_name = context.getPackageName();
+        Resources res = context.getResources();
 
         if(data.containsKey("title")) title = data.get("title");
         if(data.containsKey("body")) body = data.get("body");
+        if(data.containsKey("id")) callId = Integer.parseInt(data.get("id"));
 
-        Intent notifyIntent = new Intent(service, ReceveingCallActivity.class);
+        Intent notifyIntent = new Intent(context, ReceveingCallActivity.class);
+        notifyIntent.putExtras(bundle);
         // Set the Activity to start in a new, empty task
         notifyIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         // Create the PendingIntent
         PendingIntent notifyPendingIntent = PendingIntent.getActivity(
-          service, 0, notifyIntent, PendingIntent.FLAG_UPDATE_CURRENT
+          context, 1, notifyIntent, PendingIntent.FLAG_UPDATE_CURRENT
         );
 
-        Intent joinButton = new Intent(service, JoinCallReceiver.class);
+        Intent joinButton = new Intent(context, JoinCallReceiver.class);
         joinButton.putExtras(bundle);
         PendingIntent joinPendingIntent = PendingIntent.getBroadcast(
-          service, 5, joinButton, 0
+          context, 5, joinButton, 0
         );
 
-        Intent refuseButton = new Intent(service, RefuseCallReceiver.class);
+        Intent refuseButton = new Intent(context, RefuseCallReceiver.class);
         refuseButton.putExtras(bundle);
         PendingIntent refusePendingIntent = PendingIntent.getBroadcast(
-          service, 6, refuseButton, 0
+          context, 6, refuseButton, 0
         );
 
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(service, "call");
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "call");
         builder.setSmallIcon(res.getIdentifier("notification_icon", "mipmap", package_name))
           .setContentTitle(title)
           .setContentText(body)
+          .setCategory(Notification.CATEGORY_CALL)
           .setOngoing(true)
           .setColor(ResourcesCompat.getColor(res, res.getIdentifier("accent", "color", package_name), null))
           .setPriority(NotificationCompat.PRIORITY_HIGH)
+          .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
           .setFullScreenIntent(notifyPendingIntent, true)
           .addAction(android.R.drawable.ic_menu_call, "Atender",
             joinPendingIntent)
@@ -72,7 +80,10 @@ public class HandlerMessage implements FirebasePluginHandlerInterface {
             refusePendingIntent);
 
         NotificationManager notificationManager = (NotificationManager) service.getSystemService(Context.NOTIFICATION_SERVICE);
-        notificationManager.notify(0, builder.build());
+        notificationManager.notify(callId, builder.build());
+
+        CallNotification.startVibration(context);
+        CallNotification.startRingtone(context);
     }
 
     public static class JoinCallReceiver extends BroadcastReceiver {
@@ -81,7 +92,14 @@ public class HandlerMessage implements FirebasePluginHandlerInterface {
         public void onReceive(Context context, Intent intent) {
             Bundle extras = intent.getExtras();
             extras.putString("action", "join_call");
-            CallNotification.sendActionToJS(extras);
+
+            CallNotification.sendActionToJS(extras, context);
+
+            CallNotification.createMainActivy(context, false);
+
+            NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+            notificationManager.cancel(Integer.parseInt(extras.getString("id")));
+
             Log.d("myplugin", "Received join Event id: ");
         }
     }
@@ -92,7 +110,14 @@ public class HandlerMessage implements FirebasePluginHandlerInterface {
         public void onReceive(Context context, Intent intent) {
             Bundle extras = intent.getExtras();
             extras.putString("action", "refuse_call");
-            CallNotification.sendActionToJS(extras);
+
+            CallNotification.sendActionToJS(extras, context);
+
+            CallNotification.createMainActivy(context, true);
+
+            NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+            notificationManager.cancel(Integer.parseInt(extras.getString("id")));
+
             Log.d("myplugin", "Received refuse Event id: ");
         }
     }
