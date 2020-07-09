@@ -33,11 +33,11 @@
   <ImageView
     android:id="@+id/userIcon"
     android:layout_below="@+id/subtitle"
-    android:layout_width="wrap_content"
     android:layout_centerHorizontal="true"
+    android:layout_width="170dp"
     android:layout_height="wrap_content"
-    android:src="@drawable/ic_call_end_24dp"
-    android:scaleType="centerCrop" />
+    android:scaleType="fitCenter" />
+
 
   <TextView
     android:id="@+id/calling_name"
@@ -45,6 +45,7 @@
     android:layout_height="wrap_content"
     android:layout_below="@+id/userIcon"
     android:layout_centerHorizontal="true"
+    android:layout_marginTop="12dp"
     android:layout_marginBottom="8dp"
     android:text="Lucas Veronezzi"
     android:textSize="18sp" />

@@ -41,7 +41,8 @@
         <source-file src="src/android/HandlerMessage.java" target-dir="src/org/apache/cordova/callnotification" />
         <source-file src="src/android/ReceveingCallActivity.java" target-dir="src/org/apache/cordova/callnotification" />
         <source-file src="src/android/activity_receveing_call.xml" target-dir="res/layout"/>
-
+        
+        <resource-file src="src/android/res/drawable/icon_user_round.png" target="res/drawable/icon_user_round.png" />
         <resource-file src="src/android/res/drawable/circle_blue.xml" target="res/drawable/circle_blue.xml" />
         <resource-file src="src/android/res/drawable/circle_red.xml" target="res/drawable/circle_red.xml" />
         <resource-file src="src/android/res/drawable/circular_bordershape.xml" target="res/drawable/circular_bordershape.xml" />
