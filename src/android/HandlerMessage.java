@@ -28,7 +28,7 @@ public class HandlerMessage implements FirebasePluginHandlerInterface {
     public void onMessageReceived(RemoteMessage remoteMessage, FirebaseMessagingService service) {
         Map<String, String> data = remoteMessage.getData();
         if(data.containsKey("action") && data.get("action").contentEquals("cancelReceivingCall")) {
-            clearNotification(Integer.parseInt(data.get("id")), service.getApplicationContext());
+            clearNotification(Integer.parseInt(data.get("id")), service);
             LocalBroadcastManager.getInstance(service).sendBroadcast(new Intent("org.apache.cordova.callnotification.activity.close"));
         } else {
             this.showNotification(data, service);

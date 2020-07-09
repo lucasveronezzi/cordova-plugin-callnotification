@@ -28,6 +28,7 @@
         <config-file target="AndroidManifest.xml" parent="application">
             <activity 
                 android:theme="@android:style/Theme.NoTitleBar"
+                android:showOnLockScreen="true"
                 android:excludeFromRecents="true" 
                 android:launchMode="singleTask" 
                 android:name="org.apache.cordova.callnotification.ReceveingCallActivity" 
