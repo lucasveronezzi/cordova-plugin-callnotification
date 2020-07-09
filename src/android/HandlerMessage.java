@@ -23,7 +23,12 @@ import java.util.Map;
 public class HandlerMessage implements FirebasePluginHandlerInterface {
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage, FirebaseMessagingService service) {
-        this.showNotification(remoteMessage.getData(), service);
+        Map<String, String> data = remoteMessage.getData();
+        if(data.containsKey("action") && data.get("action").contentEquals("cancelReceivingCall")) {
+            clearNotification(Integer.parseInt(data.get("id")), service);
+        } else {
+            this.showNotification(data, service);
+        }
     }
 
     public void showNotification(Map<String, String> data, Context context) {
@@ -85,6 +90,11 @@ public class HandlerMessage implements FirebasePluginHandlerInterface {
       CallNotification.startRingtone(context);
     }
 
+    public static void clearNotification(int id, Context context) {
+      NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+      notificationManager.cancel(id);
+    }
+
     public static class JoinCallReceiver extends BroadcastReceiver {
 
         @Override
@@ -92,8 +102,7 @@ public class HandlerMessage implements FirebasePluginHandlerInterface {
             Bundle extras = intent.getExtras();
             extras.putString("action", "join_call");
 
-            NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-            notificationManager.cancel(Integer.parseInt(extras.getString("id")));
+            clearNotification(Integer.parseInt(extras.getString("id")), context);
 
             CallNotification.sendActionToJS(extras, context);
 
@@ -110,8 +119,7 @@ public class HandlerMessage implements FirebasePluginHandlerInterface {
             Bundle extras = intent.getExtras();
             extras.putString("action", "refuse_call");
 
-            NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-            notificationManager.cancel(Integer.parseInt(extras.getString("id")));
+            clearNotification(Integer.parseInt(extras.getString("id")), context);
 
             CallNotification.sendActionToJS(extras, context);
 

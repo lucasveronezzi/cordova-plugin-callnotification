@@ -16,7 +16,8 @@
     android:layout_height="wrap_content"
     android:layout_centerHorizontal="true"
     android:layout_marginBottom="8dp"
-    android:text="Consaúde"
+    android:text="@string/app_name"
+    android:gravity="center"
     android:textSize="30sp" />
 
   <TextView
@@ -48,6 +49,7 @@
     android:layout_marginTop="12dp"
     android:layout_marginBottom="8dp"
     android:text="Lucas Veronezzi"
+    android:gravity="center"
     android:textSize="18sp" />
 
   <TextView
@@ -58,6 +60,7 @@
     android:layout_centerHorizontal="true"
     android:layout_marginBottom="30dp"
     android:text="Consulta agendada para às 17:00"
+    android:gravity="center"
     android:textSize="18sp" />
 
   <LinearLayout

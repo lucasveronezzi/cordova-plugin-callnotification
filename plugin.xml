@@ -45,7 +45,6 @@
         <resource-file src="src/android/res/drawable/icon_user_round.png" target="res/drawable/icon_user_round.png" />
         <resource-file src="src/android/res/drawable/circle_blue.xml" target="res/drawable/circle_blue.xml" />
         <resource-file src="src/android/res/drawable/circle_red.xml" target="res/drawable/circle_red.xml" />
-        <resource-file src="src/android/res/drawable/circular_bordershape.xml" target="res/drawable/circular_bordershape.xml" />
         <resource-file src="src/android/res/drawable/ic_call_end_24dp.xml" target="res/drawable/ic_call_end_24dp.xml" />
         <resource-file src="src/android/res/drawable/ic_videocam_24dp.xml" target="res/drawable/ic_videocam_24dp.xml" />
         <resource-file src="src/android/res/drawable/icon_call_end.xml" target="res/drawable/icon_call_end.xml" />

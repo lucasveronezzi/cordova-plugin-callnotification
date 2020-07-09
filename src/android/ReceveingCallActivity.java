@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.content.Context;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.RoundedBitmapDrawable;
@@ -70,7 +71,7 @@ public class ReceveingCallActivity extends Activity  {
 
         Glide.with(userIcon.getContext())
           .asBitmap()
-          .load("https://homolog.consaudeonline.com.br/img/user_default.png")
+          .load(extras.getString("userImg", ""))
           .apply(RequestOptions
             .circleCropTransform()
             .placeholder(res.getIdentifier("icon_user_round", "drawable", package_name))
@@ -84,14 +85,19 @@ public class ReceveingCallActivity extends Activity  {
             }
           });
 
+        TextView textUserName = (TextView) findViewById(res.getIdentifier("calling_name", "id", package_name));
+        textUserName.setText(extras.getString("user", ""));
+
+        TextView textDescription = (TextView) findViewById(res.getIdentifier("description", "id", package_name));
+        textDescription.setText(extras.getString("description", ""));
+
         CallNotification.startVibration(this);
     }
 
     public void clickJoin(View view) {
         extras.putString("action", "join_call");
 
-        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        notificationManager.cancel(Integer.parseInt(extras.getString("id")));
+        HandlerMessage.clearNotification(Integer.parseInt(extras.getString("id")), this);
 
         CallNotification.sendActionToJS(extras, this);
 
@@ -103,8 +109,7 @@ public class ReceveingCallActivity extends Activity  {
     public void clickRefuse(View view) {
         extras.putString("action", "refuse_call");
 
-        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        notificationManager.cancel(Integer.parseInt(extras.getString("id")));
+        HandlerMessage.clearNotification(Integer.parseInt(extras.getString("id")), this);
 
         CallNotification.sendActionToJS(extras, this);
 
