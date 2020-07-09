@@ -12,6 +12,7 @@ import android.util.Log;
 
 import androidx.core.app.NotificationCompat;
 import androidx.core.content.res.ResourcesCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
@@ -21,11 +22,14 @@ import org.apache.cordova.firebase.FirebasePluginHandlerInterface;
 import java.util.Map;
 
 public class HandlerMessage implements FirebasePluginHandlerInterface {
+
+
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage, FirebaseMessagingService service) {
         Map<String, String> data = remoteMessage.getData();
         if(data.containsKey("action") && data.get("action").contentEquals("cancelReceivingCall")) {
-            clearNotification(Integer.parseInt(data.get("id")), service);
+            clearNotification(Integer.parseInt(data.get("id")), service.getApplicationContext());
+            LocalBroadcastManager.getInstance(service).sendBroadcast(new Intent("org.apache.cordova.callnotification.activity.close"));
         } else {
             this.showNotification(data, service);
         }
@@ -94,6 +98,8 @@ public class HandlerMessage implements FirebasePluginHandlerInterface {
       NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
       notificationManager.cancel(id);
     }
+
+
 
     public static class JoinCallReceiver extends BroadcastReceiver {
 

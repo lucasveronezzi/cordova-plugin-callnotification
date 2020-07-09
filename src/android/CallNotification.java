@@ -134,7 +134,7 @@ public class CallNotification extends CordovaPlugin {
         public void run() {
           try {
             HandlerMessage obj = new HandlerMessage();
-            obj.showNotification(jsonToMap(data), cordovaActivity.getApplicationContext());
+            obj.showNotification(jsonToMap(data), cordovaActivity);
 
             callbackContext.success();
           } catch (JSONException e) {

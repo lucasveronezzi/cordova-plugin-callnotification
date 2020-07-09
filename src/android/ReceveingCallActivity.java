@@ -2,7 +2,9 @@ package org.apache.cordova.callnotification;
 
 import android.app.Activity;
 import android.app.KeyguardManager;
-import android.app.NotificationManager;
+import android.content.BroadcastReceiver;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -20,6 +22,7 @@ import android.widget.TextView;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.RoundedBitmapDrawable;
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
@@ -29,9 +32,28 @@ public class ReceveingCallActivity extends Activity  {
 
     private Bundle extras = null;
 
+    private LocalBroadcastManager mLocalBroadcastManager;
+
+    private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
+
+      @Override
+      public void onReceive(Context context, Intent intent) {
+          if(intent.getAction().equals("org.apache.cordova.callnotification.activity.close")){
+              CallNotification.stopVibration();
+              CallNotification.stopRingtone();
+              finish();
+          }
+      }
+    };
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        IntentFilter mIntentFilter = new IntentFilter();
+        mIntentFilter.addAction("org.apache.cordova.callnotification.activity.close");
+        mLocalBroadcastManager = LocalBroadcastManager.getInstance(this);
+        mLocalBroadcastManager.registerReceiver(mBroadcastReceiver, mIntentFilter);
 
         String package_name = getApplication().getPackageName();
         Resources res = getApplication().getResources();
@@ -92,6 +114,12 @@ public class ReceveingCallActivity extends Activity  {
         textDescription.setText(extras.getString("description", ""));
 
         CallNotification.startVibration(this);
+    }
+
+    @Override
+    protected void onDestroy() {
+      super.onDestroy();
+      mLocalBroadcastManager.unregisterReceiver(mBroadcastReceiver);
     }
 
     public void clickJoin(View view) {
