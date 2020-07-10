@@ -1,10 +1,12 @@
 package org.apache.cordova.callnotification;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.KeyguardManager;
 import android.content.BroadcastReceiver;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -13,26 +15,44 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.os.Bundle;
 import android.os.Build;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.content.Context;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.camera.core.Camera;
+import androidx.camera.core.CameraSelector;
+import androidx.camera.core.Preview;
+import androidx.camera.lifecycle.ProcessCameraProvider;
+import androidx.camera.view.PreviewView;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.RoundedBitmapDrawable;
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.BitmapImageViewTarget;
+import com.google.common.util.concurrent.ListenableFuture;
 
-public class ReceveingCallActivity extends Activity  {
+import java.util.concurrent.ExecutionException;
+
+public class ReceveingCallActivity extends AppCompatActivity {
 
     private Bundle extras = null;
 
+    private final int REQUEST_CODE_PERMISSIONS = 10;
+
+    private final String[] REQUIRED_PERMISSIONS = new String[] { Manifest.permission.CAMERA };
+
     private LocalBroadcastManager mLocalBroadcastManager;
+
 
     private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
 
@@ -114,6 +134,57 @@ public class ReceveingCallActivity extends Activity  {
         textDescription.setText(extras.getString("description", ""));
 
         CallNotification.startVibration(this);
+
+        if (allPermissionsGranted()) {
+            startCamera();
+        } else {
+          ActivityCompat.requestPermissions(
+              this, REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == REQUEST_CODE_PERMISSIONS) {
+            if (allPermissionsGranted()) {
+                startCamera();
+            }
+        }
+    }
+
+    private boolean allPermissionsGranted() {
+      return ContextCompat.checkSelfPermission(getBaseContext(), REQUIRED_PERMISSIONS[0]) == PackageManager.PERMISSION_GRANTED;
+    }
+
+    private void startCamera() {
+      ListenableFuture<ProcessCameraProvider> cameraProviderFuture = ProcessCameraProvider.getInstance(this);
+
+      cameraProviderFuture.addListener(
+        new Runnable() {
+            public void run() {
+              // Preview
+              Preview preview = new Preview.Builder().build();
+
+              // Select back camera
+              CameraSelector cameraSelector = new CameraSelector.Builder().requireLensFacing(CameraSelector.LENS_FACING_FRONT).build();
+
+              try {
+                  ProcessCameraProvider cameraProvider = cameraProviderFuture.get();
+
+                  // Unbind use cases before rebinding
+                  cameraProvider.unbindAll();
+
+                  PreviewView viewFinder = (PreviewView) findViewById(getApplication().getResources().getIdentifier("viewFinder", "id", getApplication().getPackageName()));
+
+                  preview.setSurfaceProvider(viewFinder.createSurfaceProvider());
+
+                  // Bind use cases to camera
+                  Camera camera = cameraProvider.bindToLifecycle((LifecycleOwner)ReceveingCallActivity.this, cameraSelector, preview);
+              } catch(Exception exc) {
+                  Log.e("myplugin", "Use case binding failed", exc);
+              }
+            }
+        }, ContextCompat.getMainExecutor(this));
     }
 
     @Override

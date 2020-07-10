@@ -24,10 +24,11 @@
         </config-file>
         <config-file target="AndroidManifest.xml" parent="/*">
             <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
+            <uses-permission android:name="android.permission.CAMERA" />
         </config-file>
         <config-file target="AndroidManifest.xml" parent="application">
             <activity 
-                android:theme="@android:style/Theme.NoTitleBar"
+                android:theme="@style/Theme.AppCompat.NoActionBar"
                 android:showOnLockScreen="true"
                 android:excludeFromRecents="true" 
                 android:launchMode="singleTask" 
@@ -48,10 +49,8 @@
         <resource-file src="src/android/res/drawable/circle_red.xml" target="res/drawable/circle_red.xml" />
         <resource-file src="src/android/res/drawable/ic_call_end_24dp.xml" target="res/drawable/ic_call_end_24dp.xml" />
         <resource-file src="src/android/res/drawable/ic_videocam_24dp.xml" target="res/drawable/ic_videocam_24dp.xml" />
-        <resource-file src="src/android/res/drawable/icon_call_end.xml" target="res/drawable/icon_call_end.xml" />
-        <resource-file src="src/android/res/drawable/icon_video.xml" target="res/drawable/icon_video.xml" />
 
-        <framework src="com.github.bumptech.glide:glide:4.11.0" />
+        <framework src="src/android/build.gradle" custom="true" type="gradleReference" />
     </platform>
     
 </plugin>
