@@ -79,7 +79,11 @@ public class ReceveingCallActivity extends AppCompatActivity {
         Resources res = getApplication().getResources();
         extras = getIntent().getExtras();
 
-        int flags = WindowManager.LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON;
+        int flags = WindowManager.LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON | WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON;
+
+        if (Build.VERSION.SDK_INT < 30) {
+          flags = flags | WindowManager.LayoutParams.FLAG_FULLSCREEN;
+        }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
           setShowWhenLocked(true);
@@ -96,13 +100,8 @@ public class ReceveingCallActivity extends AppCompatActivity {
             keyguard.requestDismissKeyguard(this, null);
         } else {
           flags = flags |
-            WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON |
             WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD |
             WindowManager.LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON;
-        }
-
-        if (Build.VERSION.SDK_INT < 30) {
-          flags = flags | WindowManager.LayoutParams.FLAG_FULLSCREEN;
         }
 
         getWindow().addFlags(flags);
