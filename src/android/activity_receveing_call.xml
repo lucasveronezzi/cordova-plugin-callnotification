@@ -83,9 +83,9 @@
 
       <Button
         android:id="@+id/joinButton"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
-        android:padding="15dp"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:padding="13dp"
         android:layout_marginEnd="60dp"
         android:layout_gravity="center"
         android:background="@drawable/circle_blue"
@@ -95,9 +95,9 @@
 
       <Button
         android:id="@+id/refuseButton"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
-        android:padding="15dp"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:padding="13dp"
         android:background="@drawable/circle_red"
         android:drawableBottom="@drawable/ic_call_end_24dp"
         android:onClick="clickRefuse"
