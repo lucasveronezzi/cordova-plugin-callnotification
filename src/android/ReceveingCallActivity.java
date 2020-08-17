@@ -238,5 +238,4 @@ public class ReceveingCallActivity extends AppCompatActivity {
       c.drawCircle((w / 2) + 4, (h / 2) + 4, radius, p);
       return output;
     }
-    
 }
