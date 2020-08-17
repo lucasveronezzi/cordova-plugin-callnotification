@@ -11,5 +11,3 @@ exports.removeFromLockScreen = function (success, error) {
 exports.showNotification = function (options, success, error) {
     exec(success, error, 'CallNotification', 'showNotification', [options]);
 };
-
-
